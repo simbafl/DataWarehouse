@@ -24,5 +24,5 @@
 - 工作流
 
 - [OLAP引擎分类](./docs/olap.md)
-- [Presto、Impala与Hive](.docs/presto_impala_hive.md)
+- [Presto、Impala与Hive](./docs/presto_impala_hive.md)
 

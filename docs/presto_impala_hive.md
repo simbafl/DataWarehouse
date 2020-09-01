@@ -1,4 +1,4 @@
-Presto和Impala更像亲兄弟，设计初衷一样，也同样属于RLOAP模型设计。但是细细研究还是有些区别。
+Presto和Impala更像师兄弟，分别来自FaceBook和Google，也同样属于RLOAP模型设计。 细细研究还是有些区别。
 
 # Impala与Hive
 > 通过几方面对比下impala与hive

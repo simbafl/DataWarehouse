@@ -25,7 +25,7 @@ Apache Kudu是一个为了Hadoop系统环境而打造的**列存储管理器**�
 - 要求几乎实时的流输入处理
 
 
-kudu的主键是聚簇索引，KUDU 的存储也是通过`LSM树`（Log-Structured Merge Tree）来实现的。KUDU 的最小存储单元是 `RowSets`，KUDU 中存在两种 RowSets：`MemRowSets`、`DiskRowSets`，数据先写内存中的 `MemRowSet`，`MemRowSet` 满了后刷到磁盘成为一个 `DiskRowSet`，`DiskRowSet` 一经写入，就无法修改了。
+kudu的主键是聚簇索引，存储也是通过`LSM树`（Log-Structured Merge Tree）来实现的。KUDU 的最小存储单元是 `RowSets`，KUDU 中存在两种 RowSets：`MemRowSets`、`DiskRowSets`，数据先写内存中的 `MemRowSet`，`MemRowSet` 满了后刷到磁盘成为一个 `DiskRowSet`，`DiskRowSet` 一经写入，就无法修改了。
 
 kudu的写过程:
 

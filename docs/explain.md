@@ -3,32 +3,32 @@
 使用EXPLAIN关键字可以模拟优化器执行SQL查询语句，从而知道SQL语句是如何被处理的。可以分析查询语句的性能瓶颈。
 
 执行计划包含的信息：
-- id 
-- select_type
-- table
-- type
-- possible_keys
-- key
-- key_len
-- ref
-- rows
-- Extra   
+* [id](#id) 
+* [select_type](#select_type)
+* [table](#table)
+* [type](#type)
+* [possible_keys](#possible_keys)
+* [key](#key)
+* [key_len](#key_len)
+* [ref](#ref)
+* [rows](#rows)
+* [Extra](#Extra)
 
 ### id 
 SELECT查询的序列号，包含一组数字，表示查询中执行SELECT语句或操作表的顺序。
 
 包含三种情况：
-1. id相同，执行顺序由上至下。
-2. id不同，如果是子查询，id序号会递增，id值越大优先级越高，越先被执行。
-3. id既有相同的，又有不同的。id如果相同认为是一组，执行顺序由上至下；在所有组中，id值越大优先级越高，越先执    行。
+- id相同，执行顺序由上至下。
+- id不同，如果是子查询，id序号会递增，id值越大优先级越高，越先被执行。
+- id既有相同的，又有不同的。id如果相同认为是一组，执行顺序由上至下；在所有组中，id值越大优先级越高，越先执    行。
 
 ### select_type
-`SIMPLE`:简单SELECT查询，查询中不包含子查询或者UNION
-`PRIMARY`:查询中包含任何复杂的子部分，最外层的查询
-`SUBQUERY`：SELECT或WHERE中包含的子查询部分
-`DERIVED`：在FROM中包含的子查询被标记为DERIVER(衍生)， MySQL会递归执行这些子查询，把结果放到临时表中
-`UNION`：若第二个SELECT出现UNION，则被标记为UNION, 若UNION包含在FROM子句的子查询中，外层子查询将被标记为DERIVED
-`UNION RESULT`：从UNION表获取结果的SELECT
+- `SIMPLE`:简单SELECT查询，查询中不包含子查询或者UNION
+- `PRIMARY`:查询中包含任何复杂的子部分，最外层的查询
+- `SUBQUERY`：SELECT或WHERE中包含的子查询部分
+- `DERIVED`：在FROM中包含的子查询被标记为DERIVER(衍生)， MySQL会递归执行这些子查询，把结果放到临时表中
+- `UNION`：若第二个SELECT出现UNION，则被标记为UNION, 若UNION包含在FROM子句的子查询中，外层子查询将被标记为DERIVED
+- `UNION RESULT`：从UNION表获取结果的SELECT
 
 ### table 
 显示这一行数据是关于哪张表的
@@ -70,20 +70,20 @@ key_len显示的值为索引字段的最大可能长度，并非实际使用长�
 ### Extra
 包含不适合在其他列中显示但十分重要的额外信息：
 
-1. Using filesort： 说明MySQL会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。MySQL中无法利用索引完成的排序操作称为“文件排序”
-2. Using temporary：  使用了临时表保存中间结果，MySQL在对查询结果排序时使用临时表。常见于排序order by和分组查询group by
-3. Using index： 表示相应的SELECT操作中使用了覆盖索引（Covering Index），避免访问了表的数据行，效率不错。如果同时出现using where，表明索引被用来执行索引键值的查找； 如果没有同时出现using where，表明索引用来读取数据而非执行查找动作覆盖索引（Covering Index）.
+- Using filesort： 说明MySQL会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。MySQL中无法利用索引完成的排序操作称为“文件排序”
+- Using temporary：  使用了临时表保存中间结果，MySQL在对查询结果排序时使用临时表。常见于排序order by和分组查询group by
+- Using index： 表示相应的SELECT操作中使用了覆盖索引，避免访问了表的数据行，效率不错。如果同时出现using where，表明索引被用来执行索引键值的查找； 如果没有同时出现using where，表明索引用来读取数据而非执行查找动作覆盖索引。
 
 ```
-理解方式1：SELECT的数据列只需要从索引中就能读取到，不需要读取数据行，MySQL可以利用索引返回SELECT列表中的字段，而不必根据索引再次读取数据文件，换句话说查询列要被所建的索引覆盖 .
+理解方式1：SELECT的数据列只需要从索引中就能读取到，不需要读取数据行，MySQL可以利用索引返回SELECT列表中的字段，而不必根据索引再次读取数据文件，换句话说查询列要被所建的索引覆盖 。
 
 理解方式2：索引是高效找到行的一个方法，但是一般数据库也能使用索引找到一个列的数据，因此他不必读取整个行。毕竟索引叶子节点存储了他们索引的数据；当能通过读取索引就可以得到想要的数据，那就不需要读取行了，一个索引包含了（覆盖）满足查询结果的数据就叫做覆盖索引 
 ```
 
 注意： 如果要使用覆盖索引，一定要注意SELECT列表中只取出需要的列，不可`SELECT *`, 因为如果所有字段一起做索引会导致索引文件过大查询性能下降
 
-6. impossible where： WHERE子句的值总是false，不能用来获取任何元组.
+- impossible where： WHERE子句的值总是false，不能用来获取任何元组。
 
-7. select tables optimized away： 在没有GROUP BY子句的情况下基于索引优化`MIN/MAX`操作或者对于MyISAM存储引擎优化`COUNT(*)`操作， 不必等到执行阶段再进行计算，查询执行计划生成的阶段即完成优化.
+- select tables optimized away： 在没有GROUP BY子句的情况下基于索引优化`MIN/MAX`操作或者对于MyISAM存储引擎优化`COUNT(*)`操作， 不必等到执行阶段再进行计算，查询执行计划生成的阶段即完成优化。
 
-8. distinct： 优化distinct操作，在找到第一匹配的元祖后即停止找同样值的操作.
+- distinct： 优化distinct操作，在找到第一匹配的元祖后即停止找同样值的操作。

@@ -24,7 +24,7 @@
 
 - [数据倾斜调优/SQL调优](./docs/sql调优.md)
 - [SQL规范](./docs/sql规范.md)
-- [explain 慢sql查询](慢sql.md)
+- [explain 慢sql查询](./docs/explain.md)
 
 - [OLAP引擎分类](./docs/olap.md)
 - [Kudu](./docs/kudu.md)

@@ -18,11 +18,13 @@
 - [数据中台](./docs/数据中台.md)
 - [商务智能——BI](./docs/bi.md)
 
-- [数据倾斜调优](./docs/sql调优.md)
-
 - 指标体系
 - 数据质量
 - 工作流
+
+- [数据倾斜调优/SQL调优](./docs/sql调优.md)
+- [SQL规范](./docs/sql规范.md)
+- [explain 慢sql查询](慢sql.md)
 
 - [OLAP引擎分类](./docs/olap.md)
 - [Kudu](./docs/kudu.md)

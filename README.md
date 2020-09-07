@@ -21,10 +21,11 @@
 - 指标体系
 - 数据质量
 - 工作流
-
-- [数据倾斜调优/SQL调优](./docs/sql调优.md)
 - [SQL规范](./docs/sql规范.md)
 - [explain 慢sql查询](./docs/explain.md)
+- [数据倾斜调优/SQL调优](./docs/sql调优.md)
+- [Shuffle调优](./docs/shuffle.md)
+
 
 - [OLAP引擎分类](./docs/olap.md)
 - [Kudu](./docs/kudu.md)

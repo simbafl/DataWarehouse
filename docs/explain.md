@@ -16,6 +16,7 @@ eg: 查看简单SQL的执行计划
 EXPLAIN
 SELECT game_code, count(1) num from dwd.dim_app_game_dict where app_id>10000 and app_name like "%同城%" GROUP BY game_code
 ```
+Hue的截图如下：
 ![explain](/img/explain_mr.png)
 
 全部内部如下:

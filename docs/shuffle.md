@@ -17,13 +17,16 @@
 > 方便理解，假设一个前提：每个Executor只有1个CPU core，也就是说，无论这个Executor上分配多少个task线程，同一时间都只能执行一个task线程。
 
 大概流程如下图：
+
 ![HashShuffleManager1](/img/hashshuffle1.png)
 
 **shuffle write阶段**
 ```
 1. 主要就是在一个stage结束计算之后，为了 下一个stage可以执行shuffle类的算子（比如reduceByKey），而将每个task处理的数据按key 进行“分类”。
-2. 。所谓“分类”，就是对相同的key执行hash算法，从而将相同key都写入同一个
-磁盘文件中，而每一个磁盘文件都只属于下游stage的一个task。在将数据写入磁盘之前，会先 将数据写入内存缓冲中，当内存缓冲填满之后，才会溢写到磁盘文件中去。
-3. 那么每个执行shuffle write的task，要为下一个stage创建多少个磁盘文件呢？下一个stage的task有多少个，当前stage的每个task就要创建多少份磁盘文件。
-4. 比如下一个stage总共有100个task，那么当前stage的每个task都要创建100份磁盘文件。如果当前stage有50个task，总共有10个Executor，每个Executor执行5个Task，那么每个Executor上总共就要创建 500个磁盘文件，所有Executor上会创建5000个磁盘文件。由此可见，未经优化的shuffle write操作所产生的磁盘文件的数量是极其惊人的。
+2. 所谓“分类”，就是对相同的key执行hash算法，从而将相同key都写入同一个磁盘文件中，而每一个磁盘文件都只属于下游stage的一个task。在将数据
+   写入磁盘之前，会先将数据写入内存缓冲中，当内存缓冲填满之后，才会溢写到磁盘文件中去。
+3. 那么每个执行shuffle write的task，要为下一个stage创建多少个磁盘文件呢？下一个stage的task有多少个，当前stage的每个task就要创建多少份
+   磁盘文件。
+4. 比如下一个stage总共有100个task，那么当前stage的每个task都要创建100份磁盘文件。如果当前stage有50个task，总共有10个Executor，每个
+   Executor执行5个Task，那么每个Executor上总共就要创建 500个磁盘文件，所有Executor上会创建5000个磁盘文件。由此可见，未经优化的shuffle write操作所产生的磁盘文件的数量是极其惊人的。
 ```

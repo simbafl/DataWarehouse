@@ -50,7 +50,7 @@ task所在节点上，拉取属于自己的那一个磁盘文件即可。
 
 优化是指开启`spark.shuffle.consolidateFiles`这个参数，默认为false。。通常来说，如果使用HashShuffleManager，那么都建议开启这个选项。
 
-开启consolidate机制之后，在shuffle write过程中，task就不是为下游stage的每个task创建一个磁盘文件了。此时会出现**shuffleFileGroup**的概念，每个shuffleFileGroup会对应一批磁盘文件，磁盘文件的数量与下游stage的task数量是相同的。一个Executor上有多少个CPU core，就可以并行执行多少个task。而shuffleFileGroup的数量与Executor数量保持一致，并将数据写入对应的磁盘文件内。
+开启`consolidate机制`之后，在shuffle write过程中，task就不是为下游stage的每个task创建一个磁盘文件了。此时会出现**shuffleFileGroup**的概念，每个shuffleFileGroup会对应一批磁盘文件，磁盘文件的数量与下游stage的task数量是相同的。一个Executor上有多少个CPU core，就可以并行执行多少个task。而shuffleFileGroup的数量与Executor数量保持一致，并将数据写入对应的磁盘文件内。
 
 ```
 当Executor的CPU core执行完一批task，接着执行下一批task时，下一批task就会复用之前已有的shuffleFileGroup，包括其中的磁盘文件。也就是说，
@@ -88,9 +88,7 @@ SortShuffleManager的运行机制主要分成两种，一种是**普通运行机
 
 此外，由于一个task就只对应一个磁盘文件，也就意味着该task为下游stage的task准备的数据都在这一个文件中，因此还会单独写一份索引文件，其中标识了下游各个task的数据在文件中的start offset与end offset。
 
-SortShuffleManager由于有一个磁盘文件merge的过程，因此大大减少了文件数量。
-1. 比如第一个stage有50个task，总共有10个Executor，每个Executor执行5个task，而第二个stage有100个task。
-2. 由于每个task最终只有一个磁盘文件，因此此时每个Executor上只有5个磁盘文件，所有Executor只有50个磁盘文件。
+SortShuffleManager由于有一个磁盘文件merge的过程，因此大大减少了文件数量。比如第一个stage有50个task，总共有10个Executor，每个Executor执行5个task，而第二个stage有100个task。由于每个task最终只有一个磁盘文件，因此此时每个Executor上只有5个磁盘文件，所有Executor只有50个磁盘文件。
 
 ### bypass运行机制
 bypass运行机制的触发条件如下：
@@ -101,9 +99,9 @@ bypass运行机制的触发条件如下：
 
 ![SortShuffleManager2](/img/sortshuffle2.png)
 
-此时task会为每个下游task都创建一个临时磁盘文件，并将数据按key进行hash然后根据key的hash值，将key写入对应的磁盘文件之中。当然，写入磁盘文件时也是先写入内存缓冲，缓冲写满之后再溢写到磁盘文件的。最后，同样会将所有临时磁盘文件都合并成一个磁盘文件，并创建一个单独的索引文件。
+此时task会为每个下游task都创建一个临时磁盘文件，并将数据**按key进行hash**然后根据key的hash值，将key写入对应的磁盘文件之中。当然，写入磁盘文件时也是先写入内存缓冲，缓冲写满之后再溢写到磁盘文件的。最后，同样会将所有临时磁盘文件都合并成一个磁盘文件，并创建一个单独的索引文件。
 
-该过程的磁盘写机制其实跟未经优化的HashShuffleManager是一模一样的，因为都要创建数量惊人的磁盘文件，只是在最后会做一个磁盘文件的合并而已。因此少量的最终磁盘文件，也让该机制相对未经优化的HashShuffleManager来说，shuffle read的性能会更好。
+该过程的磁盘写机制其实跟`未经优化的HashShuffleManager`是一模一样的，因为都要创建数量惊人的磁盘文件，只是在最后会做一个磁盘文件的合并而已。因此少量的最终磁盘文件，也让该机制相对未经优化的HashShuffleManager来说，shuffle read的性能会更好。
 
 而该机制与普通SortShuffleManager运行机制的不同在于：
 ```
@@ -113,7 +111,7 @@ bypass运行机制的触发条件如下：
 
 ## Shuffle相关参数调优
 
-**1. spark.shuffle.file.buffer **
+**1. spark.shuffle.file.buffer**
 
 - 默认值：32k 
 - 参数说明：该参数用于设置shuffle write task的BufferedOutputStream的buffer缓冲大小。将数据写到磁盘文件之前，会先写入buffer缓冲中，待缓冲写满之后，才会溢写到磁盘。 

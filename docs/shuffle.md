@@ -1,5 +1,15 @@
 # shuffle调优
 
+* [前述](#前述)
+* [ShuffleManager发展](#ShuffleManager发展)
+* [HashShuffleManager原理](#HashShuffleManager原理)
+  * [未经优化的HashShuffleManager](#未经优化的HashShuffleManager)
+  * [优化后的HashShuffleManager](#优化后的HashShuffleManager)
+* [SortShuffleManager原理](#SortShuffleManager原理)
+  * [普通运行机制](#普通运行机制)
+  * [bypass运行机制](#bypass运行机制)
+* [Shuffle相关参数调优](#Shuffle相关参数调优)
+
 ## 前述
 大多数Spark作业的性能主要就是消耗在shuffle环节，因为该环节包含了大量的磁盘IO、序列化、网络传输等操作。因此，如果要让作业的性能更上一层楼，就有必要对shuffle过程进行调优。但是影响一个Spark作业性能的因素，主要还是代码开发、资源参数以及数据倾斜，shuffle调优只能在整个Spark作业的性能调优中占到一小部分。
 

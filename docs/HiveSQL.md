@@ -93,3 +93,68 @@ group by dt,source,strategy,group_id;
 最终用时不过几分钟。这种方法就是sql调优中提到的新建临时表，提前预处理数据，节省最终执行时间。
 
 # 案例二 复杂SQL分解法
+
+> 一个复杂的SQL，查询执行一段时间后报错就基本上是查不出来; 这个时候可以将其分解成很多子集，并且合理利用hive分区表的优势，然后去join。
+
+```sql
+select aid, imei, idfa, udid, event, duration, dt, time_local, hour, source, 
+      first_value(time_local) over(partition by udid, event order by time_local) as first_time,
+      last_value(time_local) over(partition by udid, event order by time_local) as last_time,
+      count(time_local) over(partition by udid, event, dt) as event_count_per_day,
+      sum(duration) over(partition by udid, event, dt) as event_duration_each_day
+from dwb.fact_event_info
+where event in ('app_start', 'app_exit', 'effective_play', 'share_succ', 'like', 'unlike', 'like_comment', 'unlike_comment', 'comment_success')
+and dt >= '2019-03-01' and dt <= '2019-03-03';
+
+```
+
+**1. 分解成三个子集， 并保存到三张表**
+```sql
+
+create table tmp.event_tmp1 partitioned by(event)
+as
+select udid, 
+       min(time_local) as first_time,
+       max(time_local) as last_time,
+       event
+from dwb.fact_event_info
+where event in ('app_start', 'app_exit', 'effective_play', 'share_succ', 'like', 'unlike', 'like_comment', 'unlike_comment', 'comment_success')
+and dt >= '2019-03-01' and dt <= '2019-03-03'
+group by udid, event;
+
+
+create table tmp.event_tmp2 partitioned by(dt,event)
+as
+select udid, 
+       count(time_local) as event_count_per_day,
+       sum(duration) as event_duration_each_day,
+       dt,
+       event
+from dwb.fact_event_info
+where event in ('app_start', 'app_exit', 'effective_play', 'share_succ', 'like', 'unlike', 'like_comment', 'unlike_comment', 'comment_success')
+and dt >= '2019-03-01' and dt <= '2019-03-03'
+group by udid, dt, event;
+
+
+create table tmp.event_tmp3 partitioned by(dt,event)
+as select aid, imei, idfa, udid, duration, time_local, hour, source, dt, event
+from dwb.fact_event_info t3
+where event in ('app_start', 'app_exit', 'effective_play', 'share_succ', 'like', 'unlike', 'like_comment', 'unlike_comment', 'comment_success')
+and dt >= '2019-03-01' and dt <= '2019-03-03';
+```
+
+**2. 插入目标表**
+
+```sql
+create table tmp.fact_event_info_tmp as 
+select t3.aid, t3.imei, t3.idfa, t3.udid, t3.event, t3.duration, t3.dt, t3.time_local, t3.hour, t3.source, 
+    t1.first_time,
+    t1.last_time,
+    t2.event_count_per_day,
+    t2.event_duration_each_day
+from tmp.event_tmp1 t1 
+join tmp.event_tmp2 t2 on t1.event=t2.event and t1.udid=t2.udid
+join tmp.event_tmp3 t3 on t2.dt=t3.dt and t2.event= t3.event and t2.udid=t3.udid;
+```
+
+**3. 插入后对比下数据量**

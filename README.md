@@ -5,7 +5,7 @@
 
 ## 数据仓库
 
-### 数仓建设
+### 1. 数仓建设
 - [个人杂谈](./docs/me.md)
 - [数据仓库的定义](./docs/数仓定义.md)
 - [从零开始搭建数据仓库](./docs/从零开始搭建数据仓库.md)
@@ -23,14 +23,14 @@
 - 数据质量
 - 工作流
 
-### 流程调优
+### 2. 调优
 - [SQL规范](./docs/sql规范.md)
 - [explain 慢sql查询](./docs/explain.md)
 - [数据倾斜调优/SQL调优](./docs/sql调优.md)
 - [HiveSQL优化案例](./docs/HiveSQL.md)
 - [Shuffle调优](./docs/shuffle.md)
 
-### OLAP引擎 
+### 3. OLAP引擎 
 - [OLAP引擎分类](./docs/olap.md)
 - [Kudu](./docs/kudu.md)
 - [Presto、Impala与Hive](./docs/presto_impala_hive.md)

@@ -44,6 +44,8 @@ Presto和Impala更像师兄弟，分别来自FaceBook和Google，也同样属于
 
 # Impala与Presto
 
+![对比](/img/presto_impala.jpg)
+
 对比:
 ```
 1. Impala的计算速度是其一大优点，多表查询性能和Presto差不多，单表查询方面却不如Presto好。
@@ -54,7 +56,3 @@ Presto和Impala更像师兄弟，分别来自FaceBook和Google，也同样属于
 ```
 
 所以从整体性能对比看，两者差不多，但是Impala更重些，使用起来没有Presto方便。
-
-公司目前的架构是：
-- Presto + Kudu 做实时计算
-- Spark + HDFS + ORC 做离线计算

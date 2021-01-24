@@ -32,7 +32,7 @@
 - [OLAP引擎分类](./docs/olap.md)
 - [Kudu](./docs/kudu.md)
 - [Presto、Impala与Hive](./docs/presto_impala_hive.md)
-- [clickHouse]
+- [clickHouse]()
 
 ## 用户画像
 
@@ -41,3 +41,5 @@
 ### 2. 技术架构
 
 ### 3. 总结
+- [工程总结](./docs/画像总结.md)
+- [技术总结]()

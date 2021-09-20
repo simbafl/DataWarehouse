@@ -1,7 +1,9 @@
 # DataWarehouse
 > 全站第一份数据仓库的学习资料
 
-在经历了公司部门向中台的转变，BI到数据平台的开发，数据仓库向数据湖的过渡，突然有了想法总结下。历经一年准备，终于把平时遇到的知识点整理起来，结合自己的实际经验输出一下。
+从数仓到用户画像，从数据建设到数据应用。
+
+在经历了BI到数据平台的研发，数据仓库向数据湖的过渡，OLAP架构升级之后，突然有了想法总结下。
 
 ## 数据仓库
 
@@ -31,8 +33,10 @@
 ### 3. OLAP引擎 
 - [OLAP引擎分类](./docs/olap.md)
 - [Kudu](./docs/kudu.md)
-- [Presto、Impala与Hive](./docs/presto_impala_hive.md)
 - [clickHouse]()
+- [Presto、Impala与Hive](./docs/presto_impala_hive.md)
+- [Druid]()
+- [OLAP大杂烩]()
 
 ## 用户画像
 
@@ -41,5 +45,5 @@
 ### 2. 技术架构
 
 ### 3. 总结
-- [工程总结](./docs/画像总结.md)
+- [产品总结](./docs/画像总结.md)
 - [技术总结]()
